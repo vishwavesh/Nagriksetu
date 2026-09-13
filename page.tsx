@@ -1,25 +1,33 @@
-import Image from "next/image";
+// app/admin/page.tsx
+"use client";
+import { useEffect, useState } from "react";
+import { mockData } from "../../lib/mockData";
 
-export default function Home() {
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    async function load() {
+      const data = await mockData.getDashboardStats();
+      setStats(data);
+    }
+    load();
+  }, []);
+
+  if (!stats) return <p className="p-4">Loading dashboard...</p>;
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-indigo-100 via-white to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <main className="flex flex-col items-center gap-6 text-center max-w-3xl">
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-          NagrikSetu
-        </h1>
-        <p className="text-xl text-gray-700 dark:text-gray-300 max-w-2xl">
-          AI‑powered civic issue reporting platform. Capture, report, and track public infrastructure problems in your community.
-        </p>
-        <div className="flex gap-4">
-          <a href="/report" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-            Report an Issue
-          </a>
-            <a href="/anonymous-report" className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-              🚨 Complain Anonymously
-            </a>
-        </div>
-        <Image src="/next.svg" alt="Next.js" width={120} height={30} className="opacity-70" />
-      </main>
+    <div className="p-4 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+      <ul className="space-y-2">
+        <li>Total Issues: {stats.total}</li>
+        <li>Open: {stats.open}</li>
+        <li>In Progress: {stats.inProgress}</li>
+        <li>Resolved: {stats.resolved}</li>
+        <li>Escalated: {stats.escalated}</li>
+        <li>Resolution Rate: {(stats.resolutionRate * 100).toFixed(1)}%</li>
+        <li>Avg Resolution Days: {stats.avgResolutionDays}</li>
+      </ul>
     </div>
   );
 }
